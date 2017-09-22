@@ -1,0 +1,12 @@
+{
+    "name": "laraspells/template-adminlte",
+    "description": "LaraSpells template Admin LTE",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Muhammad Syifa",
+            "email": "emsifa@gmail.com"
+        }
+    ],
+    "require": {}
+}
