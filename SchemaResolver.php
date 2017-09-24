@@ -1,6 +1,6 @@
 <?php
 
-namespace LaraSpells\Templates\AdminLte;
+namespace LaraSpells\Template\AdminLte;
 
 use LaraSpells\Generator\SchemaResolver as BaseSchemaResolver;
 
