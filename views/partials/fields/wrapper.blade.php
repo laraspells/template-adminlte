@@ -18,11 +18,11 @@ if ($label === false) {
   </label>
   <div class="col-lg-10 col-md-9 col-sm-8">
     {!! $slot or '' !!}
+    @if($errors->has($name))
+    <div class="help-block">{{ $errors->first($name) }}</div>
+    @endif
+    @if(isset($help))
+    <div class="help-block">{{ $help }}</div>
+    @endif
   </div>
-  @if($errors->has($name))
-  <div class="help-block">{{ $errors->first($name) }}</div>
-  @endif
-  @if(isset($help))
-  <div class="help-block">{{ $help }}</div>
-  @endif
 </div>
