@@ -8,5 +8,8 @@
             "email": "emsifa@gmail.com"
         }
     ],
+    "autoload": {
+        "LaraSpells\\Template\\AdminLte\\": "src"
+    },
     "require": {}
 }

@@ -78,12 +78,11 @@ class AdminLteTemplate extends Template
         $routePrefix = $this->getSchema()->getRoutePrefix();
         $routeName = $this->getSchema()->getRouteName(); 
         $controllerNamespace = $this->getSchema()->getControllerNamespace();
-        $viewNamespace = $this->getSchema()->getViewNamespace();
         $stub = file_get_contents(__DIR__.'/stubs/AuthController.stub');
 
         $result = $this->renderStub($stub, [
             'controller_namespace' => $controllerNamespace,
-            'view_login' => $viewNamespace.'auth.login',
+            'view_login' => $this->getSchema()->getView('auth.login'),
             'path_dashboard' => '/'.$routePrefix,
             'route_login' => $routeName.'auth.form-login'
         ]);
@@ -95,11 +94,10 @@ class AdminLteTemplate extends Template
     {
         $stub = file_get_contents(__DIR__.'/stubs/DashboardController.stub');
         $controllerNamespace = $this->getSchema()->getControllerNamespace();
-        $viewNamespace = $this->getSchema()->getViewNamespace();
 
         $result = $this->renderStub($stub, [
             'controller_namespace' => $controllerNamespace,
-            'view_dashboard' => $viewNamespace.'dashboard.dashboard',
+            'view_dashboard' => $this->getSchema()->getView('dashboard.dashboard'),
         ]);
 
         $this->putController($this->dashboardController, $result);
