@@ -45,8 +45,8 @@ $value = isset($value)? $value : '';
 
 @endcomponent
 
-@css('plugins/select2/select2.min.css')
-@js('plugins/select2/select2.min.js')
+@css('vendor/admin-lte/plugins/select2/select2.min.css')
+@js('vendor/admin-lte/plugins/select2/select2.min.js')
 @script('init-select2')
 <script>
   $('select.select2').select2({})

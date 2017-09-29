@@ -32,8 +32,8 @@ $required = isset($required)? (bool) $required : false;
 
 @endcomponent
 
-@css('vendor/crudbooster/assets/adminlte/plugins/datepicker/datepicker3.css')
-@js('vendor/crudbooster/assets/adminlte/plugins/datepicker/bootstrap-datepicker.js')
+@css('vendor/admin-lte/plugins/datepicker/datepicker3.css')
+@js('vendor/admin-lte/plugins/datepicker/bootstrap-datepicker.js')
 @script('init-datepicker')
 <script>
 $('input.date').each(function() {
