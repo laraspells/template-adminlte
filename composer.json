@@ -9,7 +9,9 @@
         }
     ],
     "autoload": {
-        "LaraSpells\\Template\\AdminLte\\": "src"
+    		"psr-4": {
+		        "LaraSpells\\Template\\AdminLte\\": "src"
+    		}
     },
     "require": {}
 }
