@@ -33,6 +33,8 @@ class FormModelControllerGenerator extends ControllerGenerator
         $this->setMethodFormEdit($method);
         $method = $this->addMethod('postEdit');
         $this->setMethodPostEdit($method);
+        $method = $this->addMethod('delete');
+        $this->setMethodDelete($method);
         $method = $this->addMethod('findOrFail');
         $this->setMethodFindOrFail($method);
         $method = $this->addMethod('form');
