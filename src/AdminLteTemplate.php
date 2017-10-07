@@ -3,7 +3,14 @@
 namespace LaraSpells\Template\AdminLte;
 
 use LaraSpells\Generator\Commands\SchemaBasedCommand;
+use LaraSpells\Generator\Generators\ControllerGenerator;
+use LaraSpells\Generator\Generators\ViewCreateGenerator;
+use LaraSpells\Generator\Generators\ViewEditGenerator;
+use LaraSpells\Generator\Schema\Table;
 use LaraSpells\Generator\Template;
+use LaraSpells\Template\AdminLte\Generators\FormModelControllerGenerator;
+use LaraSpells\Template\AdminLte\Generators\FormModelViewCreateGenerator;
+use LaraSpells\Template\AdminLte\Generators\FormModelViewEditGenerator;
 
 class AdminLteTemplate extends Template
 {
@@ -20,6 +27,15 @@ class AdminLteTemplate extends Template
     public function getSchemaResolver()
     {
         return new SchemaResolver;
+    }
+
+    public function beforeGenerateEachCrud(Table $table)
+    {
+        if (true === $table->get('form_model')) {
+            $this->setGeneratorInstance(ControllerGenerator::class, new FormModelControllerGenerator($table));
+            $this->setGeneratorInstance(ViewCreateGenerator::class, new FormModelViewCreateGenerator($table));
+            $this->setGeneratorInstance(ViewEditGenerator::class, new FormModelViewEditGenerator($table));
+        }
     }
 
     public function beforeGenerateCruds(array $tables)
