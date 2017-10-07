@@ -158,70 +158,140 @@ class FormModelControllerGenerator extends ControllerGenerator
         });
 
         $fields = $this->phpify($this->getFormFields(), true);
+        $formChilds = $this->getTableSchema()->get('form_child');
 
-        $method->appendCode("return FormModel::make(\${$data->model_varname}, {$fields});");
+        $code = "return FormModel::make(\${$data->model_varname}, {$fields})".(empty($formChilds) ? ';' : '');
+        foreach($formChilds as $i => $tableChild) {
+            $relatedTable = $this->getTableSchema()->getRootSchema()->getTable($tableChild);
+            if (!$relatedTable) {
+                throw new \Exception("Cannot generate form child '{$tableChild}'. Table '{$tableChild}' is not defined in schema.");
+            }
+
+            $relation = $this->getTableRelation($tableChild);
+            if (!$relation) {
+                $tableName = $this->getTableSchema()->getName(); 
+                throw new \Exception("Cannot generate form child '{$tableChild}'. Table '{$tableName}' doesn't have relation to table '{$tableChild}'. Did you forget to specify a field in '{$tableChild}' that have input options to table '{$tableName}'?");
+            }
+
+            $relationMethodName = $this->getRelationMethodName($relatedTable, $relation);
+            $relationLabel = $relatedTable->getLabel();
+
+            $childFields = [];
+            foreach($relatedTable->getInputableFields() as $field) {
+                if ($relation = $field->getRelation()) {
+                    if ($relation['table'] === $this->getTableSchema()->getName()) {
+                        continue;
+                    }
+                }
+
+                $key = $field->getColumnName();
+                $childFields[$key] = $this->resolveFormField($field);
+            }
+
+            $childFields = $this->phpify($childFields, true);
+            $code .= "->withMany('{$relationMethodName}', '{$relationLabel}', {$childFields})";
+
+            if ($i === count($formChilds) - 1) {
+                $code .= ";";
+            }
+
+            $method->appendCode($code);
+        }
+    }
+
+    protected function getRelationMethodName($relatedTable, $relation)
+    {
+        $type = $relation['type'];
+        $modelClass = $relatedTable->getModelClass(false);
+        if ($modelClass == $this->getTableSchema()->getModelClass(false)) {
+            $modelClass = "static";
+        }
+
+        $isHasOne = in_array($type, ['has-one']);
+        if ($isHasOne) {
+            $from = preg_replace("/(^id_|_id$)/", "", $keyFrom);
+            $methodName = camel_case($from);
+        } else {
+            $methodName = camel_case($relatedTable->getName());
+        }
+
+        return $methodName;
+    }
+
+    protected function getTableRelation($otherTable)
+    {
+        $relations = $this->getTableSchema()->getRelations();
+        foreach ($relations as $relation) {
+            if ($relation['table'] == $otherTable) {
+                return $relation;
+            }
+        }
+        return null;
     }
 
     protected function getFormFields()
     {
         $schema = $this->tableSchema;
-        $data = $this->getTableData();
-        $rootSchema = $schema->getRootSchema();
         $inputableFields = $schema->getInputableFields();
         $fields = [];
-        
         foreach($inputableFields as $field) {
-            $params = $field->getInputParams();
             $key = $field->getColumnName();
-            $rules = $field->getRules();
-            
-            if (isset($params['required'])) {
-                unset($params['required']);
-            }
+            $fields[$key] = $this->resolveFormField($field); 
+        }
+        return $fields;
+    }
 
-            if (isset($params['name'])) {
-                unset($params['name']);
-            }
-
-            if ($relation = $field->getRelation() AND isset($params['options'])) {
-                $varName = $relation['var_name'];
-                $methodName = 'get'.ucfirst(camel_case($varName));
-                $params['options'] = "eval(\"\$this->{$methodName}()\")";
-            }
-
-            if ($field->isInputFile()) {
-                $params['delete_old_file'] = true;
-                $params['upload_disk'] = $field->getUploadDisk();
-                $params['upload_path'] = $field->getUploadPath();
-                foreach ($rules as $i => $rule) {
-                    if (starts_with($rule, 'max:')) {
-                        $rules[$i] = 'max:'.(2 * 1024);
-                    }
-                }
-            }
-
-            $ruleUnique = array_filter($rules, function($rule) {
-                return starts_with($rule, 'unique:');
-            });
-
-            $others = [];
-            if ($ruleUnique) {
-                $rulesUpdate = $rules;
-                $i = array_keys($ruleUnique)[0];
-                $rulesUpdate[$i] = 'eval(""'.$rules[$i].',".$'.$data->model_varname.'->getKey()")';
-                $others['if_update'] = [
-                    'rules' => $rulesUpdate
-                ];
-            }
-
-            $fields[$key] = array_merge([
-                'input' => $field->get('input.type'),
-            ], $params, [
-                'rules' => $rules
-            ], $others);
+    protected function resolveFormField($field)
+    {
+        $data = $this->getTableData();
+        $params = $field->getInputParams();
+        $key = $field->getColumnName();
+        $rules = $field->getRules();
+        
+        if (isset($params['required'])) {
+            unset($params['required']);
         }
 
-        return $fields;
+        if (isset($params['name'])) {
+            unset($params['name']);
+        }
+
+        if ($relation = $field->getRelation() AND isset($params['options'])) {
+            $varName = $relation['var_name'];
+            $methodName = 'get'.ucfirst(camel_case($varName));
+            $params['options'] = "eval(\"\$this->{$methodName}()\")";
+        }
+
+        if ($field->isInputFile()) {
+            $params['delete_old_file'] = true;
+            $params['upload_disk'] = $field->getUploadDisk();
+            $params['upload_path'] = $field->getUploadPath();
+            foreach ($rules as $i => $rule) {
+                if (starts_with($rule, 'max:')) {
+                    $rules[$i] = 'max:'.(2 * 1024);
+                }
+            }
+        }
+
+        $ruleUnique = array_filter($rules, function($rule) {
+            return starts_with($rule, 'unique:');
+        });
+
+        $others = [];
+        if ($ruleUnique) {
+            $rulesUpdate = $rules;
+            $i = array_keys($ruleUnique)[0];
+            $rulesUpdate[$i] = 'eval(""'.$rules[$i].',".$'.$data->model_varname.'->getKey()")';
+            $others['if_update'] = [
+                'rules' => $rulesUpdate
+            ];
+        }
+
+        return array_merge([
+            'input' => $field->get('input.type'),
+        ], $params, [
+            'rules' => $rules
+        ], $others);
     }
 
 }
