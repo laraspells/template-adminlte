@@ -188,6 +188,7 @@ class FormModelControllerGenerator extends ControllerGenerator
             }
 
             if ($field->isInputFile()) {
+                $params['delete_old_file'] = true;
                 $params['upload_disk'] = $field->getUploadDisk();
                 $params['upload_path'] = $field->getUploadPath();
                 foreach ($rules as $i => $rule) {
