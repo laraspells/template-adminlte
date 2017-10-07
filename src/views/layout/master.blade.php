@@ -76,9 +76,7 @@
       reserved.
     </footer>
 
-    <!-- Control Sidebar -->
-    @include('{? view_namespace ?}layout.control-sidebar')
-    <!-- /.control-sidebar -->
+    {{-- @include('{? view_namespace ?}layout.control-sidebar') --}}
   </div>
   <!-- ./wrapper -->
 
