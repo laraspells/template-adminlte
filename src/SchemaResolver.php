@@ -23,6 +23,7 @@ class SchemaResolver extends BaseSchemaResolver
         'select2-multiple',
         'icheck-radio',
         'icheck-checkbox',
+        'date'
     ];
 
     protected function resolveFieldInputCkeditor($colName, array $fieldSchema, $tableName)
