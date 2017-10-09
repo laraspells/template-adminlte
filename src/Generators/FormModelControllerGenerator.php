@@ -158,7 +158,10 @@ class FormModelControllerGenerator extends ControllerGenerator
         });
 
         $fields = $this->phpify($this->getFormFields(), true);
-        $formChilds = (array) $this->getTableSchema()->get('form_child');
+        $formChilds = $this->getTableSchema()->get('form_child') ?: [];
+        if (is_string($formChilds)) {
+            $formChilds = [trim($formChilds)];
+        }
 
         $code = "return FormModel::make(\${$data->model_varname}, {$fields})".(empty($formChilds) ? ';' : '');
         foreach($formChilds as $i => $tableChild) {
