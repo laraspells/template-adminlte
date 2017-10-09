@@ -75,7 +75,7 @@ class FormModelControllerGenerator extends ControllerGenerator
 
         $method->appendCode("\$data['title'] = 'Form Create {$data->label}';");
         $method->appendCode("\$data['form'] = \$this->form(new {$data->model->class})->withAction(route('{$data->route->post_create}'));");
-        
+
         $method->nl();
         $method->appendCode("return view('{$data->view->form_create}', \$data);");
     }
@@ -90,7 +90,7 @@ class FormModelControllerGenerator extends ControllerGenerator
             $docblock->setReturn(static::CLASS_RESPONSE);
         });
 
-        $method->appendCode("\$this->form(new Product)->submit(\$request);");
+        $method->appendCode("\$this->form(new {$data->model->class})->submit(\$request);");
         $method->nl();
 
         $method->appendCode("
@@ -172,7 +172,7 @@ class FormModelControllerGenerator extends ControllerGenerator
 
             $relation = $this->getTableRelation($tableChild);
             if (!$relation) {
-                $tableName = $this->getTableSchema()->getName(); 
+                $tableName = $this->getTableSchema()->getName();
                 throw new \Exception("Cannot generate form child '{$tableChild}'. Table '{$tableName}' doesn't have relation to table '{$tableChild}'. Did you forget to specify a field in '{$tableChild}' that have input options to table '{$tableName}'?");
             }
 
@@ -198,8 +198,8 @@ class FormModelControllerGenerator extends ControllerGenerator
                 $code .= ";";
             }
 
-            $method->appendCode($code);
         }
+        $method->appendCode($code);
     }
 
     protected function getRelationMethodName($relatedTable, $relation)
@@ -239,7 +239,7 @@ class FormModelControllerGenerator extends ControllerGenerator
         $fields = [];
         foreach($inputableFields as $field) {
             $key = $field->getColumnName();
-            $fields[$key] = $this->resolveFormField($field); 
+            $fields[$key] = $this->resolveFormField($field);
         }
         return $fields;
     }
@@ -250,7 +250,7 @@ class FormModelControllerGenerator extends ControllerGenerator
         $params = $field->getInputParams();
         $key = $field->getColumnName();
         $rules = $field->getRules();
-        
+
         if (isset($params['required'])) {
             unset($params['required']);
         }
