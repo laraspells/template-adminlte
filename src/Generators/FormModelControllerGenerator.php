@@ -163,7 +163,7 @@ class FormModelControllerGenerator extends ControllerGenerator
             $formChilds = [trim($formChilds)];
         }
 
-        $code = "return FormModel::make(\${$data->model_varname}, {$fields})".(empty($formChilds) ? ';' : '');
+        $code = "return FormModel::make(\${$data->model_varname}, {$fields})";
         foreach($formChilds as $i => $tableChild) {
             $relatedTable = $this->getTableSchema()->getRootSchema()->getTable($tableChild);
             if (!$relatedTable) {
@@ -197,8 +197,13 @@ class FormModelControllerGenerator extends ControllerGenerator
             if ($i === count($formChilds) - 1) {
                 $code .= ";";
             }
-
         }
+
+        $code .= "->withViewData([
+            'before_button_save' => '<a class=\"btn btn-default\" href=\"'.route('{$data->route->page_list}').'\"><i class=\"fa fa-chevron-left\"></i> Cancel</a>&nbsp;',
+        ])";
+        $code .= ";";
+
         $method->appendCode($code);
     }
 
