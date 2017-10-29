@@ -26,6 +26,17 @@ class SchemaResolver extends BaseSchemaResolver
         'date'
     ];
 
+    /**
+     * Fill route schema
+     *
+     * @param array &$schema
+     */
+    protected function fillRouteSchema(array &$schema)
+    {
+        parent::fillRouteSchema($schema);
+        data_fill($schema, 'route.middleware', 'auth');
+    }
+
     protected function resolveFieldInputCkeditor($colName, array $fieldSchema, $tableName)
     {
         data_fill($fieldSchema, 'display', 'html');

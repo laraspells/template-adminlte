@@ -42,7 +42,6 @@ class AdminLteTemplate extends Template
     {
         $routeName = $this->getSchema()->getRouteName();
         $this->addConfigMenu($routeName.'dashboard', 'Dashboard', ['icon' => 'fa-dashboard']);
-        $this->getRouteCrud()->setMiddleware('auth');
         $this->addAuthRoutes();
         $this->addDashboardRoute();
         $this->generateAuthController();
@@ -53,7 +52,6 @@ class AdminLteTemplate extends Template
     {
         $routePrefix = $this->getSchema()->getRoutePrefix();
         $routeGenerator = $this->getRouteCollector();
-        $routePrefix = $this->getSchema()->getRoutePrefix();
         $routeName = $this->getSchema()->getRouteName();
         $routeDomain = $this->getSchema()->getRouteDomain();
 
@@ -83,10 +81,19 @@ class AdminLteTemplate extends Template
 
     protected function addDashboardRoute()
     {
-        $routeName = $this->getSchema()->getRouteName(); 
-        $this->getRouteCrud()->addRoute('get', '/', $this->dashboardController.'@pageDashboard', [
-            'name' => 'dashboard'
-        ]);
+        $routePrefix = $this->getSchema()->getRoutePrefix();
+        $routeGenerator = $this->getRouteCollector();
+        $routeName = $this->getSchema()->getRouteName('dashboard');
+        $routeDomain = $this->getSchema()->getRouteDomain();
+
+        if (!$this->hasRouteNamed($routeName)) {
+            $routeName = $this->getSchema()->getRouteName();
+            $this->getRouteCollector()->addRoute('get', $routePrefix, $this->dashboardController.'@pageDashboard', [
+                'name' => $routeName.'dashboard',
+                'middleware' => 'auth',
+                'domain' => $routeDomain
+            ]);
+        }
     }
 
     protected function generateAuthController()
