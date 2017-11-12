@@ -37,25 +37,25 @@ class SchemaResolver extends BaseSchemaResolver
         data_fill($schema, 'route.middleware', 'auth');
     }
 
-    protected function resolveFieldInputCkeditor($colName, array $fieldSchema, $tableName)
+    protected function resolveFieldInputCkeditor($colName, array $fieldSchema, $tableName, $tableSchema)
     {
         data_fill($fieldSchema, 'display', 'html');
         return $fieldSchema;
     }
 
-    protected function resolveFieldInputSelect2($colName, array $fieldSchema, $tableName)
+    protected function resolveFieldInputSelect2($colName, array $fieldSchema, $tableName, $tableSchema)
     {
-        return $this->resolveOptionableField($colName, $fieldSchema, $tableName);
+        return $this->resolveOptionableField($colName, $fieldSchema, $tableName, $tableSchema);
     }
 
-    protected function resolveFieldInputIcheckRadios($colName, array $fieldSchema, $tableName)
+    protected function resolveFieldInputIcheckRadios($colName, array $fieldSchema, $tableName, $tableSchema)
     {
-        return $this->resolveOptionableField($colName, $fieldSchema, $tableName);
+        return $this->resolveOptionableField($colName, $fieldSchema, $tableName, $tableSchema);
     }
 
-    protected function resolveFieldInputIcheckCheckbox($colName, array $fieldSchema, $tableName)
+    protected function resolveFieldInputIcheckCheckbox($colName, array $fieldSchema, $tableName, $tableSchema)
     {
-        return $this->resolveOptionableField($colName, $fieldSchema, $tableName);
+        return $this->resolveOptionableField($colName, $fieldSchema, $tableName, $tableSchema);
     }
 
 }
