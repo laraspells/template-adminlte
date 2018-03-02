@@ -19,26 +19,37 @@ class FormModelControllerGenerator extends ControllerGenerator
         $this->setTableSchema($tableSchema);
         $this->initClass();
         // $this->addMethodsFromReflection();
+        
         $method = $this->addMethod('__construct');
+        
         $this->setMethodConstruct($method);
-        $method = $this->addMethod('pageList');
-        $this->setMethodPageList($method);
-        $method = $this->addMethod('pageDetail');
-        $this->setMethodPageDetail($method);
-        $method = $this->addMethod('formCreate');
-        $this->setMethodFormCreate($method);
-        $method = $this->addMethod('postCreate');
-        $this->setMethodPostCreate($method);
-        $method = $this->addMethod('formEdit');
-        $this->setMethodFormEdit($method);
-        $method = $this->addMethod('postEdit');
-        $this->setMethodPostEdit($method);
-        $method = $this->addMethod('delete');
-        $this->setMethodDelete($method);
+        $method = $this->addMethod('index');
+
+        $this->setMethodIndex($method);
+        $method = $this->addMethod('show');
+        
+        $this->setMethodShow($method);
+        $method = $this->addMethod('create');
+        $this->setMethodCreate($method);
+        
+        $method = $this->addMethod('store');
+        $this->setMethodStore($method);
+        
+        $method = $this->addMethod('edit');
+        $this->setMethodEdit($method);
+        
+        $method = $this->addMethod('update');
+        $this->setMethodUpdate($method);
+        
+        $method = $this->addMethod('destroy');
+        $this->setMethodDestroy($method);
+        
         $method = $this->addMethod('findOrFail');
         $this->setMethodFindOrFail($method);
+        
         $method = $this->addMethod('form');
         $this->setMethodForm($method);
+        
         $this->addMethodsFormOptions();
     }
 
@@ -62,7 +73,7 @@ class FormModelControllerGenerator extends ControllerGenerator
         });
     }
 
-    protected function setMethodFormCreate(MethodGenerator $method)
+    protected function setMethodCreate(MethodGenerator $method)
     {
         $fieldsHasRelation = $this->getInputableFieldsHasRelation();
         $data = $this->getTableData();
@@ -74,13 +85,13 @@ class FormModelControllerGenerator extends ControllerGenerator
         });
 
         $method->appendCode("\$data['title'] = 'Form Create {$data->label}';");
-        $method->appendCode("\$data['form'] = \$this->form(new {$data->model->class})->withAction(route('{$data->route->post_create}'));");
+        $method->appendCode("\$data['form'] = \$this->form(new {$data->model->class})->withAction(route('{$data->route->store}'));");
 
         $method->nl();
-        $method->appendCode("return view('{$data->view->form_create}', \$data);");
+        $method->appendCode("return view('{$data->view->create}', \$data);");
     }
 
-    protected function setMethodPostCreate(MethodGenerator $method)
+    protected function setMethodStore(MethodGenerator $method)
     {
         $data = $this->getTableData();
         $method->addArgument('request', static::CLASS_REQUEST);
@@ -95,11 +106,11 @@ class FormModelControllerGenerator extends ControllerGenerator
 
         $method->appendCode("
             \$message = '{$data->label} has been created!';
-            return redirect()->route('{$data->route->page_list}')->with('info', \$message);
+            return redirect()->route('{$data->route->index}')->with('info', \$message);
         ");
     }
 
-    protected function setMethodFormEdit(MethodGenerator $method)
+    protected function setMethodEdit(MethodGenerator $method)
     {
         $fieldsHasRelation = $this->getInputableFieldsHasRelation();
         $data = $this->getTableData();
@@ -115,14 +126,14 @@ class FormModelControllerGenerator extends ControllerGenerator
         $initModelCode = $this->getInitModelCode();
         $method->appendCode($initModelCode);
         $method->nl();
-        $view = $data->view->form_edit;
+        $view = $data->view->edit;
         $method->appendCode("\$data['title'] = 'Form Edit {$data->label}';");
-        $method->appendCode("\$data['form'] = \$this->form(\${$data->model_varname})->withAction(route('{$data->route->post_edit}', [\${$data->primary_varname}]));");
+        $method->appendCode("\$data['form'] = \$this->form(\${$data->model_varname})->withAction(route('{$data->route->update}', [\${$data->primary_varname}]));");
         $method->nl();
         $method->appendCode("return view('{$view}', \$data);");
     }
 
-    protected function setMethodPostEdit(MethodGenerator $method)
+    protected function setMethodUpdate(MethodGenerator $method)
     {
         $data = $this->getTableData();
         $method->addArgument('request', static::CLASS_REQUEST);
@@ -142,7 +153,7 @@ class FormModelControllerGenerator extends ControllerGenerator
         $method->nl();
         $method->appendCode("
             \$message = '{$data->label} has been updated!';
-            return redirect()->route('{$data->route->page_list}')->with('info', \$message);
+            return redirect()->route('{$data->route->index}')->with('info', \$message);
         ");
     }
 
@@ -200,7 +211,7 @@ class FormModelControllerGenerator extends ControllerGenerator
         }
 
         $code .= "->withViewData([
-            'before_button_save' => '<a class=\"btn btn-default\" href=\"'.route('{$data->route->page_list}').'\"><i class=\"fa fa-chevron-left\"></i> Cancel</a>&nbsp;',
+            'before_button_save' => '<a class=\"btn btn-default\" href=\"'.route('{$data->route->index}').'\"><i class=\"fa fa-chevron-left\"></i> Cancel</a>&nbsp;',
         ])";
         $code .= ";";
 

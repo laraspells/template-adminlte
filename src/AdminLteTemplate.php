@@ -133,7 +133,8 @@ class AdminLteTemplate extends Template
     protected function getRouteNamespace()
     {
         $controllerNamespace = $this->getSchema()->getControllerNamespace();
-        return trim(str_replace('App\Http\Controllers\\', '', $controllerNamespace), '\\');
+        $namespace = trim(str_replace('App\Http\Controllers', '', $controllerNamespace), '\\');
+        return $namespace;
     }
 
 }

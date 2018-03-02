@@ -16,7 +16,7 @@ class FormModelViewEditGenerator extends ViewEditGenerator
 
     public function getContent()
     {
-        $stub = new Stub(file_get_contents(__DIR__.'/../stubs/form-model/form-edit.stub'));
+        $stub = new Stub(file_get_contents(__DIR__.'/../stubs/form-model/edit.stub'));
         $data = json_decode(json_encode($this->getTableData()), true);
         return $stub->render($data);
     }

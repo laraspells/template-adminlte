@@ -23,6 +23,8 @@
     <div class="box-body">
       <form class="form-horizontal" {? form.attributes ?}>
         {? form.fields ?}
+        {!! csrf_field() !!}
+        {{ method_field('PUT') }}
         @component('{? view_namespace ?}partials.fields.wrapper', ['name' => '', 'label' => false])
           {!! csrf_field() !!}
           <a class='btn btn-default' href="{{ route('{? route_list ?}') }}">
